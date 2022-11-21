@@ -1,5 +1,5 @@
-const { default: mongoose } = require('mongoose');
-const mongoosse = require('mongoose');
+const { default: mongoose } = require('mongoose')
+const mongoosse = require('mongoose')
 
 const studentSchema = new mongoosse.Schema({
     firstname:{
@@ -17,6 +17,6 @@ const studentSchema = new mongoosse.Schema({
         createdAt: 'created_at',
         updatedAt: "updated_at",
     }
-});
+})
 
-module.exports = mongoose.model('Student', studentSchema);
+module.exports = mongoose.model('Student', studentSchema)
