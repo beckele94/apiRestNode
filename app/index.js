@@ -23,7 +23,10 @@ const classesRouter = require('./routes/classes');
 const studentRouter = require('./routes/students');
 
 app.get("/", (req, res) => {
-    res.status(200).send('<h1>Hello world !</h1>');
+    let html = '<h1>API rest en Node.js</h1>' +
+        '<p>Avec mongoDB</p>' +
+        '<p>Gestion élèves et classes</p>'
+    res.status(200).send(html);
 });
 
 app.use('/students', studentRouter);

@@ -2,6 +2,16 @@ const { default: mongoose } = require('mongoose')
 const mongoosse = require('mongoose')
 
 const studentSchema = new mongoosse.Schema({
+    email:{
+        type: String,
+        require: true,
+        trim: true
+    },
+    password:{
+        type: String,
+        require: true,
+        trim: true
+    },
     firstname:{
         type: String,
         require: [true, 'Entrez un prénom'],

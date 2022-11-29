@@ -1,42 +1,93 @@
-const { json } = require('body-parser');
-const express = require('express');
-const studentModel = require('../models/student');
+const { json } = require('body-parser')
+const express = require('express')
+const studentModel = require('../models/student')
+const bcrypt = require("bcrypt");
 
 let router = express.Router();
 
+router.post('/register', async (request, response) =>{
 
-//TODO: crud comme classes.js
+    const {email, email_cfg, password, password_cfg, firstname, lastname} = request.body;
 
-router.post('/', async(request, response) =>{
-    const {firstname, lastname} = request.body;
-
-    if (typeof firstname === 'undefined' || typeof lastname === 'undefined'){
+    if( (typeof email === "undefined" || email.trim() === "") ||
+        (typeof password === "undefined" || password.trim() === "")
+    ){
         return response.status(500).json({
-            msg: "Veuillez saisir un prenom et un nom valide"
-        })
+            msg: "Il faut remplir tous les champs"
+        });
+    }
+
+    if ( email !== email_cfg || password !== password_cfg){
+        return response.status(500).json({
+            msg: "Les confirmations ne sont pas exactes"
+        });
+    }
+
+    if (typeof firstname === 'undefined' || typeof lastname === 'undefined') {
+        return response.status(500).json({
+            "msg": "vous devez entrer un nom et un prénom"
+        });
     }
 
     try {
-        let student = await studentModel.create({
-            firstname,
-            lastname
-        });
+        if (await studentModel.findOne({email})){
+            return response.status(500).json({
+                msg: "Le compte existe déjà"
+            });
+        }
 
-        return response.status(200).json(student);
+        let student =  await studentModel.create({
+            email: email.trim(),
+            password: await bcrypt.hash(password, 10),
+            firstname: typeof firstname !== 'undefined' ? firstname.trim() : "",
+            lastname: typeof lastname !== 'undefined' ? lastname.trim() : "",
+        })
     }catch (error){
         return response.status(500).json({
-            msg: "Il y a eu une erreur : " + erreur
-        })
+            msg: error
+        });
     }
+
+    return response.status(200).json({
+        msg: "page register"
+    });
 })
 
-router.get('/', async (request, response) => {
-    try {
-        let students = await studentModel.find()
-        return response.status(200).json(students)
-    } catch (error) {
-        return response.status(500).json(error)
+router.get('/login', async (request, response) => {
+    const {email, password} = request.body;
+
+    if( (typeof email === "undefined" || email.trim() === "") ||
+        (typeof password === "undefined" || password.trim() === "")
+    ){
+        return response.status(500).json({
+            msg: "Il faut remplir tous les champs"
+        });
     }
+
+    try {
+        let student =  await studentModel.findOne({email})
+        if(student) {
+            if (await bcrypt.compare(password, student.password)) {
+                return response.status(200).json(student)
+            } else {
+                return response.status(500).json({
+                    msg: "Mauvais mot de passe"
+                });
+            }
+        }else {
+            return response.status(500).json({
+                msg: "Mauvais email"
+            });
+        }
+    }catch (error){
+        console.log(error)
+        return response.status(500).json({
+            msg: error
+        });
+    }
+
+
+
 })
 
 router.get('/:id', async (request, response) => {
@@ -58,7 +109,7 @@ router.delete('/:id', async (request,response) => {
     try {
         let student = await studentModel.findByIdAndRemove(id)
         return response.status(200).json({
-            msg: "Etudiant bien supprimée !"
+            msg: "Etudiant bien supprimé !"
         })
     }catch (error) {
         return response.status(500).json(error)
@@ -83,7 +134,7 @@ router.put('/:id', async (request,response) =>{
     }catch (error) {
         return response.status(500).json(error)
     }
-    
+
 })
 
 module.exports = router;
