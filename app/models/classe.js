@@ -1,16 +1,18 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const classeSchema = new mongoose.Schema({
-    label:{
+
+const classesSchema = new mongoose.Schema({
+    name:{
         type: String,
-        required: [true, 'Entrez un label'],
+        required: true,
         trim: true
-    }
+    },
+    students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student' }]
 },{
-    timestamps: {
+    timestamps:{
         createdAt: 'created_at',
-        updatedAt: "updated_at",
+        updatedAt: 'updated_at'
     }
 })
 
-module.exports = mongoose.model('Classe', classeSchema)
+module.exports = mongoose.model('Classe', classesSchema)
