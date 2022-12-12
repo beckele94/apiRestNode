@@ -31,6 +31,7 @@ mongoose.connect(process.env.MONGO_URL, {
 
 const classesRouter = require('./routes/classes');
 const studentRouter = require('./routes/students');
+const lessonRouter = require('./routes/lessons');
 
 app.get("/", (req, res) => {
     res.status(200).send('<h1>Hello world !</h1>');
@@ -38,6 +39,7 @@ app.get("/", (req, res) => {
 
 app.use('/students', studentRouter);
 app.use('/classes', classesRouter);
+app.use('/lessons', lessonRouter);
 
 
 app.listen(4500, () => {
